@@ -1,14 +1,11 @@
 package com.softdesign.livetest.api.produto;
 
-import com.softdesign.livetest.api.cliente.ClienteDTO;
-import com.softdesign.livetest.domain.cliente.Cliente;
 import com.softdesign.livetest.domain.produto.Produto;
-import org.springframework.data.annotation.Id;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public record ProdutoDTO(String id, String nome, String descricao, Double valor) {
+public record ProdutoDTO(String id, String nome, String descricao, BigDecimal valor) {
 
 
     public Produto toProduto() {

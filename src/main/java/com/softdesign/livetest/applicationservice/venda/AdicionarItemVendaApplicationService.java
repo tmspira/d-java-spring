@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class AdicionarItemVendaApplicationService {
 
@@ -34,14 +36,16 @@ public class AdicionarItemVendaApplicationService {
 
         if (itemOptional.isPresent()) {
             var item = itemOptional.get();
-            var itemModificado = item.withValorTotal(item.valorTotal() + (quantidade * produto.valor()))
+            var itemModificado = item.withValorTotal(item.valorTotal().add(produto.valor().multiply(BigDecimal.valueOf(quantidade))))
                     .withQuantidade(item.quantidade() + quantidade);
             venda.items().set(venda.items().indexOf(item), itemModificado);
         } else {
-            venda.items().add(new ItemVenda(produto.id(), quantidade, quantidade * produto.valor()));
+            venda.items().add(new ItemVenda(produto.id(), quantidade, produto.valor().multiply(BigDecimal.valueOf(quantidade))));
         }
 
-        var valorTotalVenda = venda.items().stream().mapToDouble(ItemVenda::valorTotal).sum();
+       var valorTotalVenda = venda.items().stream().
+               map(ItemVenda::valorTotal)
+               .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         vendaService.update(venda.withValorTotal(valorTotalVenda));
     }

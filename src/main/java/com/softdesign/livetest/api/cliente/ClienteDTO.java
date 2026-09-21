@@ -1,10 +1,11 @@
 package com.softdesign.livetest.api.cliente;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.softdesign.livetest.domain.cliente.Cliente;
 
 import java.util.List;
 
-public record ClienteDTO(String id, String nome, Integer idade, EnderecoDTO enderecoDTO) {
+public record ClienteDTO(String id, String nome, Integer idade, @JsonProperty("endereco") EnderecoDTO enderecoDTO) {
 
     public Cliente toCliente() {
         return new Cliente(this.id, this.nome, this.idade, this.enderecoDTO.toEndereco());

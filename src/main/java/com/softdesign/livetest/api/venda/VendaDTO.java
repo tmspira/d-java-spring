@@ -2,9 +2,10 @@ package com.softdesign.livetest.api.venda;
 
 import com.softdesign.livetest.domain.venda.Venda;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-public record VendaDTO(String id, String clienteId, Double valorTotal, List<ItemVendaDTO> items) {
+public record VendaDTO(String id, String clienteId, BigDecimal valorTotal, List<ItemVendaDTO> items) {
 
     public static VendaDTO from(Venda venda) {
         return new VendaDTO(venda.id(), venda.clienteId(), venda.valorTotal(), ItemVendaDTO.from(venda.items()));

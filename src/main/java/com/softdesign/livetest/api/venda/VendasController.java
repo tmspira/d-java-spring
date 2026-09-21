@@ -37,7 +37,7 @@ public class VendasController {
         try {
             var vendas = vendaService.listAll();
 
-            return ResponseEntity.accepted().body(VendaDTO.from(vendas));
+            return ResponseEntity.ok().body(VendaDTO.from(vendas));
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
@@ -49,7 +49,7 @@ public class VendasController {
         try {
             var venda = vendaService.getById(id);
 
-            return ResponseEntity.accepted().body(VendaDTO.from(venda));
+            return ResponseEntity.ok().body(VendaDTO.from(venda));
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
@@ -57,9 +57,9 @@ public class VendasController {
     }
 
     @PostMapping("/vendas")
-    public ResponseEntity<VendaDTO> createa(@RequestBody CreateVendaRequest createVendaRequest) {
+    public ResponseEntity<VendaDTO> create(@RequestBody CreateVendaRequest createVendaRequest) {
         try {
-            var venda = createVendaApplicationService.execute(createVendaRequest.clienteId());
+            var venda = createVendaApplicationService.execute(createVendaRequest);
             var createdUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(venda.id()).toUri();
             return ResponseEntity.created(createdUri).body(VendaDTO.from(venda));
         } catch (Exception exception) {
