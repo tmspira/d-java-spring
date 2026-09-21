@@ -34,53 +34,32 @@ public class VendasController {
 
     @GetMapping("/vendas")
     public ResponseEntity<List<VendaDTO>> listAll() {
-        try {
-            var vendas = vendaService.listAll();
-
-            return ResponseEntity.ok().body(VendaDTO.from(vendas));
-        } catch (Exception exception) {
-            LOGGER.error(exception.getMessage(), exception);
-            throw exception;
-        }
+        var vendas = vendaService.listAll();
+        return ResponseEntity.ok().body(VendaDTO.from(vendas));
     }
 
     @GetMapping("/vendas/{id}")
     public ResponseEntity<VendaDTO> get(@PathVariable("id") String id) {
-        try {
-            var venda = vendaService.getById(id);
-
-            return ResponseEntity.ok().body(VendaDTO.from(venda));
-        } catch (Exception exception) {
-            LOGGER.error(exception.getMessage(), exception);
-            throw exception;
-        }
+        var venda = vendaService.getById(id);
+        return ResponseEntity.ok().body(VendaDTO.from(venda));
     }
 
     @PostMapping("/vendas")
     public ResponseEntity<VendaDTO> create(@RequestBody CreateVendaRequest createVendaRequest) {
-        try {
-            var venda = createVendaApplicationService.execute(createVendaRequest);
-            var createdUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(venda.id()).toUri();
-            return ResponseEntity.created(createdUri).body(VendaDTO.from(venda));
-        } catch (Exception exception) {
-            LOGGER.error(exception.getMessage(), exception);
-            throw exception;
-        }
+        var venda = createVendaApplicationService.execute(createVendaRequest);
+        var createdUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(venda.id()).toUri();
+        return ResponseEntity.created(createdUri).body(VendaDTO.from(venda));
     }
 
     @PostMapping("/vendas/{id}/item")
     public ResponseEntity<Void> addItemVenda(@PathVariable("id") String id,
                                              @RequestBody AdicionarItemVendaRequest adicionarItemVendaRequest) {
-        try {
-            adicionarItemVendaProducer.send(new AdicionarItemVendaMessage(
-                    id,
-                    adicionarItemVendaRequest.produtoId(),
-                    adicionarItemVendaRequest.quantidade()));
-            return ResponseEntity.accepted().build();
-        } catch (Exception exception) {
-            LOGGER.error(exception.getMessage(), exception);
-            throw exception;
-        }
+        adicionarItemVendaProducer.send(new AdicionarItemVendaMessage(
+                id,
+                adicionarItemVendaRequest.produtoId(),
+                adicionarItemVendaRequest.quantidade()));
+        return ResponseEntity.accepted().build();
+
     }
 
 }
