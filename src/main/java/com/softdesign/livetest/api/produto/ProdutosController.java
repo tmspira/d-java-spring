@@ -28,7 +28,7 @@ public class ProdutosController {
         try {
             var produtos = produtoService.listAll();
 
-            return ResponseEntity.accepted().body(ProdutoDTO.from(produtos));
+            return ResponseEntity.ok().body(ProdutoDTO.from(produtos));
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
@@ -40,7 +40,7 @@ public class ProdutosController {
         try {
             var produto = produtoService.getById(id);
 
-            return ResponseEntity.accepted().body(ProdutoDTO.from(produto));
+            return ResponseEntity.ok().body(ProdutoDTO.from(produto));
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
@@ -52,7 +52,7 @@ public class ProdutosController {
         try {
             var produto = produtoService.update(updateProdutoRequest.toProduto(id));
 
-            return ResponseEntity.accepted().body(ProdutoDTO.from(produto));
+            return ResponseEntity.ok().body(ProdutoDTO.from(produto));
         } catch (ClienteNotFound clienteNotFound) {
             LOGGER.error(clienteNotFound.getMessage(), clienteNotFound);
             return ResponseEntity.notFound().build();

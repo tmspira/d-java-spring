@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+// Ver possibilidade se deve ser deletado após implantação de endpoint de
+// venda com lista de itens
+
 @Service
 public class AdicionarItemVendaProducer {
 

@@ -27,7 +27,7 @@ public class ClientesController {
         try {
             var clientes = clienteService.listAll();
 
-            return ResponseEntity.accepted().body(ClienteDTO.from(clientes));
+            return ResponseEntity.ok().body(ClienteDTO.from(clientes));
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
@@ -39,7 +39,7 @@ public class ClientesController {
         try {
             var cliente = clienteService.getById(id);
 
-            return ResponseEntity.accepted().body(ClienteDTO.from(cliente));
+            return ResponseEntity.ok().body(ClienteDTO.from(cliente));
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage(), exception);
             throw exception;
@@ -51,7 +51,7 @@ public class ClientesController {
         try {
             var cliente = clienteService.update(updateClienteRequest.toCliente(id));
 
-            return ResponseEntity.accepted().body(ClienteDTO.from(cliente));
+            return ResponseEntity.ok().body(ClienteDTO.from(cliente));
         } catch (ClienteNotFound clienteNotFound) {
             LOGGER.error(clienteNotFound.getMessage(), clienteNotFound);
             return ResponseEntity.notFound().build();

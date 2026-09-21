@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+// Ver possibilidade se deve ser deletado após implantação de endpoint de
+// venda com lista de itens
+
 @Service
 public class AdicionarItemVendaApplicationService {
 
