@@ -40,6 +40,10 @@ public class ProdutoService {
                 new ProdutoNotFound("produto não encontrado - " + produtoId));
     }
 
+    public List<Produto> findAllByIds(List<String> produtoIds) {
+        return produtoMongoRepository.findAllById(produtoIds);
+    }
+
     public List<Produto> listAll() {
         var produtos = produtoMongoRepository.findAll();
 
