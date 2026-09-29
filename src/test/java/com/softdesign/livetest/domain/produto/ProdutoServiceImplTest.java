@@ -1,5 +1,6 @@
 package com.softdesign.livetest.domain.produto;
 
+import com.softdesign.livetest.api.exception.ServiceException;
 import com.softdesign.livetest.mocks.ProdutoMock;
 import com.softdesign.livetest.repository.produto.ProdutoMongoRepository;
 import org.junit.jupiter.api.Test;
@@ -17,13 +18,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ProdutoServiceTest {
+class ProdutoServiceImplTest {
 
     @Mock
     private ProdutoMongoRepository produtoMongoRepository;
 
     @InjectMocks
-    private ProdutoService produtoService;
+    private ProdutoServiceImpl produtoService;
 
     @Test
     void deveCriarProduto() {
@@ -35,9 +36,7 @@ class ProdutoServiceTest {
         var result = produtoService.create(produto);
 
         assertEquals(produto, result);
-
-        verify(produtoMongoRepository)
-                .insert(produto);
+        verify(produtoMongoRepository).insert(produto);
     }
 
     @Test
@@ -54,11 +53,8 @@ class ProdutoServiceTest {
 
         assertEquals(produto, result);
 
-        verify(produtoMongoRepository)
-                .findById(produto.id());
-
-        verify(produtoMongoRepository)
-                .save(produto);
+        verify(produtoMongoRepository).findById(produto.id());
+        verify(produtoMongoRepository).save(produto);
     }
 
     @Test
@@ -68,13 +64,10 @@ class ProdutoServiceTest {
         when(produtoMongoRepository.findById(produto.id()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(
-                ProdutoNotFound.class,
-                () -> produtoService.update(produto)
-        );
+        var exception = assertThrows(ServiceException.class, () -> produtoService.update(produto));
+        assertEquals("Produto não encontrado " + produto.id(), exception.getMessage());
 
-        verify(produtoMongoRepository)
-                .findById(produto.id());
+        verify(produtoMongoRepository).findById(produto.id());
     }
 
     @Test
@@ -99,29 +92,18 @@ class ProdutoServiceTest {
         when(produtoMongoRepository.findById(produto.id()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(
-                ProdutoNotFound.class,
-                () -> produtoService.getById(produto.id())
-        );
+        var exception = assertThrows(ServiceException.class, () -> produtoService.getById(produto.id()));
+        assertEquals("Produto não encontrado", exception.getMessage());
 
-        verify(produtoMongoRepository)
-                .findById(produto.id());
+        verify(produtoMongoRepository).findById(produto.id());
     }
 
     @Test
     void deveBuscarProdutosPorIds() {
         var produto1 = ProdutoMock.criar();
         var produto2 = ProdutoMock.criar();
-
-        var ids = List.of(
-                produto1.id(),
-                produto2.id()
-        );
-
-        var produtos = List.of(
-                produto1,
-                produto2
-        );
+        var ids = List.of(produto1.id(), produto2.id());
+        var produtos = List.of(produto1, produto2);
 
         when(produtoMongoRepository.findAllById(ids))
                 .thenReturn(produtos);
@@ -130,19 +112,14 @@ class ProdutoServiceTest {
 
         assertEquals(produtos, result);
 
-        verify(produtoMongoRepository)
-                .findAllById(ids);
+        verify(produtoMongoRepository).findAllById(ids);
     }
 
     @Test
     void deveListarTodosOsProdutos() {
         var produto1 = ProdutoMock.criar();
         var produto2 = ProdutoMock.criar();
-
-        var produtos = List.of(
-                produto1,
-                produto2
-        );
+        var produtos = List.of(produto1, produto2);
 
         when(produtoMongoRepository.findAll())
                 .thenReturn(produtos);
@@ -151,7 +128,6 @@ class ProdutoServiceTest {
 
         assertEquals(produtos, result);
 
-        verify(produtoMongoRepository)
-                .findAll();
+        verify(produtoMongoRepository).findAll();
     }
 }

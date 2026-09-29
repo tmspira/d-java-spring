@@ -1,5 +1,6 @@
 package com.softdesign.livetest.domain.cliente;
 
+import com.softdesign.livetest.api.exception.ServiceException;
 import com.softdesign.livetest.mocks.ClienteMock;
 import com.softdesign.livetest.repository.cliente.ClienteMongoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ClienteServiceTest {
+class ClienteServiceImplTest {
 
     @Mock
     private ClienteMongoRepository clienteMongoRepository;
 
     @InjectMocks
-    private ClienteService clienteService;
+    private ClienteServiceImpl clienteService;
 
     private Cliente cliente;
 
@@ -67,10 +68,9 @@ class ClienteServiceTest {
         when(clienteMongoRepository.findById(cliente.id()))
                 .thenReturn(Optional.empty());
 
-        var exception = assertThrows(ClienteNotFound.class,
-                () -> clienteService.update(cliente));
+        var exception = assertThrows(ServiceException.class, () -> clienteService.update(cliente));
 
-        assertEquals("cliente não encontrado - " + cliente.id(), exception.getMessage());
+        assertEquals("Cliente não encontrado " + cliente.id(), exception.getMessage());
 
         verify(clienteMongoRepository).findById(cliente.id());
         verify(clienteMongoRepository, never()).save(any());
@@ -95,10 +95,9 @@ class ClienteServiceTest {
         when(clienteMongoRepository.findById(cliente.id()))
                 .thenReturn(Optional.empty());
 
-        var exception = assertThrows(ClienteNotFound.class,
-                () -> clienteService.getById(cliente.id()));
+        var exception = assertThrows(ServiceException.class, () -> clienteService.getById(cliente.id()));
 
-        assertEquals("cliente não encontrado - " + cliente.id(), exception.getMessage());
+        assertEquals("Cliente não encontrado " + cliente.id(), exception.getMessage());
 
         verify(clienteMongoRepository).findById(cliente.id());
     }

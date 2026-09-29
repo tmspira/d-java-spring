@@ -45,10 +45,9 @@ public class VendasController {
     }
 
     @PostMapping("/vendas")
-    public ResponseEntity<VendaDTO> create(@RequestBody CreateVendaRequest createVendaRequest) {
+    public VendaDTO create(@RequestBody CreateVendaRequest createVendaRequest) {
         var venda = createVendaApplicationService.execute(createVendaRequest);
-        var createdUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(venda.id()).toUri();
-        return ResponseEntity.created(createdUri).body(VendaDTO.from(venda));
+        return VendaDTO.from(venda);
     }
 
     @PostMapping("/vendas/{id}/item")

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AdicionarItemVendaApplicationServiceTest {
+class AdicionarItemVendaApplicationServiceImplTest {
 
     @Mock
     private VendaService vendaService;
@@ -29,7 +29,7 @@ class AdicionarItemVendaApplicationServiceTest {
     private ProdutoService produtoService;
 
     @InjectMocks
-    private AdicionarItemVendaApplicationService adicionarItemVendaApplicationService;
+    private AdicionarItemVendaApplicationServiceImpl adicionarItemVendaApplicationService;
 
     @Test
     void deveAdicionarNovoItemNaVenda() {

@@ -1,9 +1,8 @@
 package com.softdesign.livetest.applicationservice.venda;
 
+import com.softdesign.livetest.api.exception.ServiceException;
 import com.softdesign.livetest.domain.cliente.ClienteService;
-import com.softdesign.livetest.domain.produto.ProdutoNotFound;
 import com.softdesign.livetest.domain.produto.ProdutoService;
-import com.softdesign.livetest.domain.venda.QuantidadeInvalida;
 import com.softdesign.livetest.domain.venda.Venda;
 import com.softdesign.livetest.domain.venda.VendaService;
 import com.softdesign.livetest.mocks.ClienteMock;
@@ -19,11 +18,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.softdesign.livetest.api.exception.ApplicationError.PRODUCT_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CreateVendaApplicationServiceTest {
+class CreateVendaApplicationServiceImplTest {
 
     @Mock
     private VendaService vendaService;
@@ -35,7 +35,7 @@ class CreateVendaApplicationServiceTest {
     private ProdutoService produtoService;
 
     @InjectMocks
-    private CreateVendaApplicationService applicationService;
+    private CreateVendaApplicationServiceImpl applicationService;
 
     @Test
     void deveCriarVendaComSucesso() {
@@ -44,10 +44,7 @@ class CreateVendaApplicationServiceTest {
 
         var request = CreateVendaRequestMock.criar(
                 cliente.id(),
-                List.of(
-                        ItemVendaRequestMock.criar(produto.id(), 2)
-                )
-        );
+                List.of(ItemVendaRequestMock.criar(produto.id(), 2)));
 
         when(clienteService.getById(cliente.id()))
                 .thenReturn(cliente);
@@ -69,8 +66,7 @@ class CreateVendaApplicationServiceTest {
         assertEquals(produto.id(), item.produtoId());
         assertEquals(2, item.quantidade());
 
-        var valorEsperado = produto.valor()
-                .multiply(BigDecimal.valueOf(2));
+        var valorEsperado = produto.valor().multiply(BigDecimal.valueOf(2));
 
         assertEquals(valorEsperado, item.valorTotal());
         assertEquals(valorEsperado, resultado.valorTotal());
@@ -86,7 +82,7 @@ class CreateVendaApplicationServiceTest {
 
         var request = CreateVendaRequestMock.criar(cliente.id(), null);
 
-        assertThrows(ProdutoNotFound.class, () -> applicationService.execute(request));
+        assertThrows(ServiceException.class, () -> applicationService.execute(request));
 
         verifyNoInteractions(produtoService, clienteService, vendaService);
     }
@@ -99,10 +95,9 @@ class CreateVendaApplicationServiceTest {
 
         var request = CreateVendaRequestMock.criar(cliente.id(), List.of(item));
 
-        var exception = assertThrows(ProdutoNotFound.class,
-                () -> applicationService.execute(request));
+        var exception = assertThrows(ServiceException.class, () -> applicationService.execute(request));
 
-        assertEquals("ID de algum produto não encontrado", exception.getMessage());
+        assertEquals("Produto não encontrado", exception.getMessage());
 
         verifyNoInteractions(produtoService, clienteService, vendaService);
     }
@@ -115,8 +110,7 @@ class CreateVendaApplicationServiceTest {
 
         var request = CreateVendaRequestMock.criar(cliente.id(), List.of(item));
 
-        assertThrows(ProdutoNotFound.class,
-                () -> applicationService.execute(request));
+        assertThrows(ServiceException.class, () -> applicationService.execute(request));
 
         verifyNoInteractions(produtoService, clienteService, vendaService);
     }
@@ -133,12 +127,9 @@ class CreateVendaApplicationServiceTest {
 
         var request = CreateVendaRequestMock.criar(cliente.id(), List.of(item));
 
-        var exception = assertThrows(QuantidadeInvalida.class,
-                () -> applicationService.execute(request)
-        );
+        var exception = assertThrows(ServiceException.class, () -> applicationService.execute(request));
 
-        assertEquals("Quantidade do produto " + produto.id()
-                        + " deve ser maior que zero", exception.getMessage());
+        assertEquals("Quantidade inválida do produto " + produto.id(), exception.getMessage());
 
         verifyNoInteractions(produtoService, clienteService, vendaService);
     }
@@ -150,15 +141,9 @@ class CreateVendaApplicationServiceTest {
 
         var request = CreateVendaRequestMock.criar(
                 cliente.id(),
-                List.of(
-                        ItemVendaRequestMock.criar(produto.id(), 0)
-                )
-        );
+                List.of(ItemVendaRequestMock.criar(produto.id(), 0)));
 
-        assertThrows(
-                QuantidadeInvalida.class,
-                () -> applicationService.execute(request)
-        );
+        assertThrows(ServiceException.class, () -> applicationService.execute(request));
 
         verifyNoInteractions(produtoService, clienteService, vendaService);
     }
@@ -176,7 +161,7 @@ class CreateVendaApplicationServiceTest {
         );
 
         assertThrows(
-                QuantidadeInvalida.class,
+                ServiceException.class,
                 () -> applicationService.execute(request)
         );
 
@@ -196,10 +181,10 @@ class CreateVendaApplicationServiceTest {
         );
 
         when(produtoService.getById(produto.id()))
-                .thenThrow(new ProdutoNotFound("Produto não encontrado"));
+                .thenThrow(new ServiceException(PRODUCT_NOT_FOUND));
 
         var exception = assertThrows(
-                ProdutoNotFound.class,
+                ServiceException.class,
                 () -> applicationService.execute(request)
         );
 
@@ -249,7 +234,6 @@ class CreateVendaApplicationServiceTest {
         assertEquals(valorEsperado, item.valorTotal());
         assertEquals(valorEsperado, resultado.valorTotal());
 
-        verify(produtoService, times(2))
-                .getById(produto.id());
+        verify(produtoService, times(2)).getById(produto.id());
     }
 }

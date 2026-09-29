@@ -1,4 +1,7 @@
 package com.softdesign.livetest.api.exception;
 
-public record ErrorResponse(String code, String message) {}
+import com.softdesign.livetest.util.exception.response.ApiErrorField;
 
+import java.util.List;
+
+public record ErrorResponse(String code, String message, Object data, List<ApiErrorField> fields) {}

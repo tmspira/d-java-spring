@@ -1,53 +1,18 @@
 package com.softdesign.livetest.domain.produto;
 
-import com.softdesign.livetest.repository.produto.ProdutoMongoRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+public interface ProdutoService {
 
-@Service
-public class ProdutoService {
+    Produto create(Produto produto);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoService.class);
+    Produto update(Produto produto);
 
-    private final ProdutoMongoRepository produtoMongoRepository;
+    Produto getById(String produtoId);
 
-    public ProdutoService(ProdutoMongoRepository produtoMongoRepository) {
-        this.produtoMongoRepository = produtoMongoRepository;
-    }
+    List<Produto> findAllByIds(List<String> produtoIds);
 
-    public Produto create(Produto produto) {
-        return produtoMongoRepository.insert(produto);
-    }
-
-    public Produto update(Produto produto) {
-        var optionalProduto = produtoMongoRepository.findById(produto.id());
-
-        if (optionalProduto.isEmpty()) {
-            throw new ProdutoNotFound("cliente não encontrado - " + produto.id());
-        }
-
-        return produtoMongoRepository.save(produto);
-    }
-
-    public Produto getById(String produtoId) {
-        var optionalProduto = produtoMongoRepository.findById(produtoId);
-
-        return optionalProduto.orElseThrow(() ->
-                new ProdutoNotFound("produto não encontrado - " + produtoId));
-    }
-
-    public List<Produto> findAllByIds(List<String> produtoIds) {
-        return produtoMongoRepository.findAllById(produtoIds);
-    }
-
-    public List<Produto> listAll() {
-        var produtos = produtoMongoRepository.findAll();
-
-        return produtos;
-    }
+    List<Produto> listAll();
 
 }

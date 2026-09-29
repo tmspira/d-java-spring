@@ -1,5 +1,6 @@
 package com.softdesign.livetest.domain.venda;
 
+import com.softdesign.livetest.api.exception.ServiceException;
 import com.softdesign.livetest.mocks.VendaMock;
 import com.softdesign.livetest.repository.venda.VendaMongoRepository;
 import org.junit.jupiter.api.Test;
@@ -17,13 +18,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class VendaServiceTest {
+class VendaServiceImplTest {
 
     @Mock
     private VendaMongoRepository vendaMongoRepository;
 
     @InjectMocks
-    private VendaService vendaService;
+    private VendaServiceImpl vendaService;
 
     @Test
     void deveCriarVenda() {
@@ -64,15 +65,8 @@ class VendaServiceTest {
         when(vendaMongoRepository.findById(venda.id()))
                 .thenReturn(Optional.empty());
 
-        var exception = assertThrows(
-                VendaNotFound.class,
-                () -> vendaService.update(venda)
-        );
-
-        assertEquals(
-                "venda não encontrada - " + venda.id(),
-                exception.getMessage()
-        );
+        var exception = assertThrows(ServiceException.class, () -> vendaService.update(venda));
+        assertEquals("Venda não encontrada " + venda.id(), exception.getMessage());
 
         verify(vendaMongoRepository).findById(venda.id());
     }
@@ -98,25 +92,16 @@ class VendaServiceTest {
         when(vendaMongoRepository.findById(vendaId))
                 .thenReturn(Optional.empty());
 
-        var exception = assertThrows(
-                VendaNotFound.class,
-                () -> vendaService.getById(vendaId)
-        );
+        var exception = assertThrows(ServiceException.class, () -> vendaService.getById(vendaId));
 
-        assertEquals(
-                "venda não encontrada - " + vendaId,
-                exception.getMessage()
-        );
+        assertEquals("Venda não encontrada " + vendaId, exception.getMessage());
 
         verify(vendaMongoRepository).findById(vendaId);
     }
 
     @Test
     void deveListarTodasAsVendas() {
-        var vendas = List.of(
-                VendaMock.criar(),
-                VendaMock.criarComDoisItens()
-        );
+        var vendas = List.of(VendaMock.criar(), VendaMock.criarComDoisItens());
 
         when(vendaMongoRepository.findAll())
                 .thenReturn(vendas);
